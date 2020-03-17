@@ -1,3 +1,6 @@
+from datetime import time, datetime
+
+import bson
 from bson import ObjectId
 from pymongo import MongoClient, ReadPreference
 import os
@@ -16,31 +19,34 @@ history_collection = client.test.history
 change_stream = main_collection.watch()
 for change in change_stream:
     print(dumps(change))
-    print('')  # for readability only
-
-    # insert
-    # print(change["fullDocument"])
-    # print(change["fullDocument"]["_id"])
-    # for k, v in change["fullDocument"].items():
-    #     print(k, v)
+    print('')
 
     # update
-    for k, v in change["updateDescription"]["updatedFields"].items():
-        print(k, v)
+        # for k, v in change["updateDescription"]["updatedFields"].items():
+        #     print(k, v)
+        #
+        # print(change["updateDescription"]["updatedFields"])
+        # print(change["documentKey"])
+        # print(change["documentKey"]["_id"])
+        # print(history_collection.find_one({"_id": change["documentKey"]["_id"]}))
 
-    print(change["documentKey"])
+    try:
+        dic = history_collection.find_one({"_id": change["documentKey"]["_id"]})
+    except:
+        dic = {}
 
+    for k, v in history_collection.find_one({"_id": change["documentKey"]["_id"]}).items():
+        for kk, vv in change["updateDescription"]["updatedFields"].items():
+            if type(v) != bson.objectid.ObjectId:
+                if k == kk:
+                    if type(v) != list:
+                        dic[k] = [{'timestamp': str(datetime.now()), 'value': vv}]
+                    else:
+                        dic[k].append({'timestamp': str(datetime.now()), 'value': vv})
 
-    # history_collection.find_one_and_update(
-    #     {"_id": ObjectId(change["fullDocument"]["_id"])},
-    #     {"$set":
-    #          {"some field": "OBJECTROCKET ROCKS3!!"}
-    #      }, upsert=True
-    # )
-    # history_collection.insert_one(change["fullDocument"])
-
-
-
-
-
-# client.test.test.insert_one({"hello": "world"}).inserted_id
+    history_collection.find_one_and_update(
+        {"_id": change["documentKey"]["_id"]},
+        {"$set":
+             dic
+         }, upsert=True
+    )
