@@ -22,6 +22,7 @@ for change in change_stream:
     print('')
 
     # update
+    try:
         # for k, v in change["updateDescription"]["updatedFields"].items():
         #     print(k, v)
         #
@@ -30,23 +31,52 @@ for change in change_stream:
         # print(change["documentKey"]["_id"])
         # print(history_collection.find_one({"_id": change["documentKey"]["_id"]}))
 
-    try:
-        dic = history_collection.find_one({"_id": change["documentKey"]["_id"]})
-    except:
+        try:
+            dic = history_collection.find_one({"_id": change["documentKey"]["_id"]})
+        except:
+            dic = {}
+
+        for k, v in history_collection.find_one({"_id": change["documentKey"]["_id"]}).items():
+            for kk, vv in change["updateDescription"]["updatedFields"].items():
+                if type(v) != bson.objectid.ObjectId:
+                    if k == kk:
+                        if type(v) != list:
+                            dic[k] = [{'timestamp': str(datetime.now()), 'value': vv}]
+                        else:
+                            dic[k].append({'timestamp': str(datetime.now()), 'value': vv})
+
+        history_collection.find_one_and_update(
+            {"_id": change["documentKey"]["_id"]},
+            {"$set":
+                 dic
+             }, upsert=True
+        )
+    except KeyError:
         dic = {}
+        print(change["fullDocument"])
+        for k, v in change["fullDocument"].items():
+            dic[k] = [{'timestamp': str(datetime.now()), 'value': v}]
+            print(dic)
+        del dic['_id']
+        print(dic)
+        history_collection.insert_one(dic)
 
-    for k, v in history_collection.find_one({"_id": change["documentKey"]["_id"]}).items():
-        for kk, vv in change["updateDescription"]["updatedFields"].items():
-            if type(v) != bson.objectid.ObjectId:
-                if k == kk:
-                    if type(v) != list:
-                        dic[k] = [{'timestamp': str(datetime.now()), 'value': vv}]
-                    else:
-                        dic[k].append({'timestamp': str(datetime.now()), 'value': vv})
 
-    history_collection.find_one_and_update(
-        {"_id": change["documentKey"]["_id"]},
-        {"$set":
-             dic
-         }, upsert=True
-    )
+    # history_collection.find_one_and_update(
+    #     {"_id": history_collection.find_one({"_id": change["documentKey"]["_id"]})},
+    #     {"$set":
+    #          {"age": 32}
+    #      }, upsert=True
+    # )
+
+    # history_collection.insert_one(change["fullDocument"])
+
+    # history_collection.find_one_and_update(
+    #     {"_id": ObjectId(change["fullDocument"]["_id"])},
+    #     {"$set":
+    #          {"some field": "OBJECTROCKET ROCKS3!!"}
+    #      }, upsert=True
+    # )
+    # history_collection.insert_one(change["fullDocument"])
+
+# client.test.test.insert_one({"hello": "world"}).inserted_id
