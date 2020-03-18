@@ -24,12 +24,12 @@ for change in change_stream:
     operation_type = change['operationType']
 
     if operation_type == 'insert':
-        dic = {}
+        hist = {}
         id = change['fullDocument']['_id']
         for k, v in change['fullDocument'].items():
-            dic[k] = [{'timestamp': str(datetime.now()), 'value': v}]
-        dic['_id'] = id
-        history_collection.insert_one(dic)
+            hist[k] = [{'timestamp': str(datetime.now()), 'value': v}]
+        hist['_id'] = id
+        history_collection.insert_one(hist)
 
     elif operation_type == 'update':
     # update
@@ -40,40 +40,44 @@ for change in change_stream:
         # print(change['documentKey'])
         # print(change['documentKey']['_id'])
         # print(history_collection.find_one({'_id': change['documentKey']['_id']}))
-        dic = history_collection.find_one({'_id': change['documentKey']['_id']})
+        # print(history_collection.find_one({'_id': change['documentKey']['_id']}).items())
+        # print(change['updateDescription']['updatedFields'].items())
 
-        print(history_collection.find_one({'_id': change['documentKey']['_id']}).items())
-        print(change['updateDescription']['updatedFields'].items())
+        hist = history_collection.find_one({'_id': change['documentKey']['_id']})
+        update = change['updateDescription']
 
-        for k, v in history_collection.find_one({'_id': change['documentKey']['_id']}).items():
+        for k, v in hist.items():
             if type(v) != bson.objectid.ObjectId:
-                for kk, vv in change['updateDescription']['updatedFields'].items():
+                for kk, vv in update['updatedFields'].items():
                     if k == kk:
-                        dic[kk].append({'timestamp': str(datetime.now()), 'value': vv})
+                        hist[kk].append({'timestamp': str(datetime.now()), 'value': vv})
                     # else:
                         # print(kk, vv)
                         # dic[kk] = [{'timestamp': str(datetime.now()), 'value': vv}]
-                for kk in change['updateDescription']['removedFields']:
+                for kk in update['removedFields']:
                     if k == kk:
-                        dic[k].append({'timestamp': str(datetime.now()), 'deleted': True})
+                        hist[k].append({'timestamp': str(datetime.now()), 'deleted': True})
                     # else:
                     #     dic[k] = [{'timestamp': str(datetime.now()), 'deleted': True}]
-
-        print(dic)
+        # print(hist)
 
         history_collection.find_one_and_update(
             {'_id': change['documentKey']['_id']},
-            {'$set': dic}, upsert=True)
+            {'$set': hist}, upsert=True)
 
     # TODO:
     # elif operation_type == 'replace':
     #     print('replace')
     elif operation_type == 'delete':
-        dic = history_collection.find_one({'_id': change['documentKey']['_id']})
-        dic['deleted_timestamp'] = datetime.now()
+        hist = history_collection.find_one({'_id': change['documentKey']['_id']})
+        hist['deleted_timestamp'] = datetime.now()
         history_collection.find_one_and_update(
             {'_id': change['documentKey']['_id']},
-            {'$set': dic}, upsert=True)
+            {'$set': hist}, upsert=True)
+
+# TODO: Reconstruct object to timestamp
+
+# TODO: Reconstruct collection to timestamp
 
 
     # history_collection.find_one_and_update(
