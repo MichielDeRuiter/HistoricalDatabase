@@ -5,16 +5,18 @@ from pymongo import MongoClient
 client = MongoClient('localhost:27017')
 col = client.test.test
 
-# insert
-print(col.insert_one({"name": "John", "age": 30}).inserted_id)
+# insert document
+# print(col.insert_one({'name': 'John', 'age': 30}).inserted_id)
 
-# update
+# update document
 # doc = col.find_one_and_update(
-#     {"_id" : ObjectId("5e6ba6fe72c4f8d47409eaba")},
-#     {"$set":
-#         {"name":"John", "age": 47}
-#     },upsert=True
-# )
+#     {'_id': ObjectId('5e72433e0e9954067cf6f974')},
+#     {'$set': {'name': 'Michiel', 'aaa': 51}}, upsert=True)
 
-# delete
-# col.delete_one({'_id': ObjectId("5e62aa67ea11412666fc3502")})
+# delete field
+# doc = col.find_one_and_update(
+#     {'_id': ObjectId('5e72433e0e9954067cf6f974')},
+#     {'$unset': {'aaa': ''}}, upsert=True)
+
+# delete document
+col.delete_one({'_id': ObjectId('5e727e25d7cf7cd79a956561')})
