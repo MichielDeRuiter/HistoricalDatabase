@@ -1,23 +1,19 @@
 from datetime import time, datetime
 
 import bson
-from bson import ObjectId
 from pymongo import MongoClient, ReadPreference
-import os
-import pymongo
 from bson.json_util import dumps
-import json
 
-client = MongoClient()
-client2 = MongoClient('localhost:27017', replicaset='rs0', read_preference=ReadPreference.PRIMARY)
-main_collection = client2.test.test
-history_collection = client.test.history
+main_client = MongoClient()
+replica_client = MongoClient('localhost:27017', replicaset='rs0', read_preference=ReadPreference.PRIMARY)
+change_stream = replica_client.test.test
+history_collection = main_client.test.history
 
-# print(client.test_database)
-# print(client2.test_database)
+# print(main_client.test_database)
+# print(replica_client.test_database)
 
-change_stream = main_collection.watch()
-for change in change_stream:
+changes = change_stream.watch()
+for change in changes:
     print(dumps(change))
     print('')
 
@@ -75,9 +71,7 @@ for change in change_stream:
             {'_id': change['documentKey']['_id']},
             {'$set': hist}, upsert=True)
 
-# TODO: Reconstruct object to timestamp
 
-# TODO: Reconstruct collection to timestamp
 
 
     # history_collection.find_one_and_update(
