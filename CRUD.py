@@ -1,15 +1,16 @@
+from bson import ObjectId
 from pymongo import MongoClient
 
 client = MongoClient()
 col = client.test.test
 
 # insert document
-print(col.insert_one({'name': 'Foo', 'age': 1337}).inserted_id)
+# print(col.insert_one({'name': 'Foo', 'age': 1337}).inserted_id)
 
 # update document
-# doc = col.find_one_and_update(
-#     {'_id': ObjectId('5e73ceea5f70ca03be3a666b')},
-#     {'$set': {'name': 'Bar', 'age': 1338}}, upsert=True)
+doc = col.find_one_and_update(
+    {'_id': ObjectId('5e7bc3944edccf2c7ac9b846')},
+    {'$set': {'name': 'Bar', 'age': 1338}}, upsert=True)
 
 # delete field
 # doc = col.find_one_and_update(
