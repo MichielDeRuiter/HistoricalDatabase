@@ -20,8 +20,8 @@ def restore_object(object_id, timestamp):
     restored_object = {}
 
     for k, v in historical_object.items():
-        # print(v[-1:])
-        # print('deleted' in v[-1:][0])
+
+        # if the last field in the array is deleted, delete it, otherwise include it
         if 'deleted' in v[-1]:
             pass
         else:
@@ -37,5 +37,4 @@ def restore_object(object_id, timestamp):
 
 # TODO: Reconstruct collection to timestamp
 if __name__ == '__main__':
-    # execute only if run as a script
     print(restore_object('5e7bc3944edccf2c7ac9b846', '2020-03-25 21:48:30.962634'))

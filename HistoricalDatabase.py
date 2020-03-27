@@ -47,48 +47,17 @@ for change in changes:
                 for kk, vv in update['updatedFields'].items():
                     if k == kk:
                         hist[kk].append({'timestamp': str(datetime.now()), 'value': vv})
-                    # else:
-                        # print(kk, vv)
-                        # dic[kk] = [{'timestamp': str(datetime.now()), 'value': vv}]
                 for kk in update['removedFields']:
                     if k == kk:
                         hist[k].append({'timestamp': str(datetime.now()), 'deleted': True})
-                    # else:
-                    #     dic[k] = [{'timestamp': str(datetime.now()), 'deleted': True}]
-        # print(hist)
 
         history_collection.find_one_and_update(
             {'_id': change['documentKey']['_id']},
             {'$set': hist}, upsert=True)
 
-    # TODO:
-    # elif operation_type == 'replace':
-    #     print('replace')
     elif operation_type == 'delete':
         hist = history_collection.find_one({'_id': change['documentKey']['_id']})
         hist['deleted_timestamp'] = datetime.now()
         history_collection.find_one_and_update(
             {'_id': change['documentKey']['_id']},
             {'$set': hist}, upsert=True)
-
-
-
-
-    # history_collection.find_one_and_update(
-    #     {'_id': history_collection.find_one({'_id': change['documentKey']['_id']})},
-    #     {'$set':
-    #          {'age': 32}
-    #      }, upsert=True
-    # )
-
-    # history_collection.insert_one(change['fullDocument'])
-
-    # history_collection.find_one_and_update(
-    #     {'_id': ObjectId(change['fullDocument']['_id'])},
-    #     {'$set':
-    #          {'some field': 'OBJECTROCKET ROCKS3!!'}
-    #      }, upsert=True
-    # )
-    # history_collection.insert_one(change['fullDocument'])
-
-# client.test.test.insert_one({'hello': 'world'}).inserted_id
