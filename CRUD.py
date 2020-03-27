@@ -10,12 +10,12 @@ col = client.test.test
 # update document
 doc = col.find_one_and_update(
     {'_id': ObjectId('5e7bc3944edccf2c7ac9b846')},
-    {'$set': {'name': 'Bar', 'age': 1338}}, upsert=True)
+    {'$set': {'name': 'Bar', 'age': 1340}}, upsert=True)
 
 # delete field
 # doc = col.find_one_and_update(
-#     {'_id': ObjectId('5e72433e0e9954067cf6f974')},
-#     {'$unset': {'aaa': ''}}, upsert=True)
+#     {'_id': ObjectId('5e7bc3944edccf2c7ac9b846')},
+#     {'$unset': {'age': ''}}, upsert=True)
 
 # delete document
 # col.delete_one({'_id': ObjectId('5e727e25d7cf7cd79a956561')})
