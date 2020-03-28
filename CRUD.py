@@ -5,7 +5,7 @@ client = MongoClient()
 col = client.test.test
 
 # insert document
-# print(col.insert_one({'name': 'Foo', 'age': 1337}).inserted_id)
+print(col.insert_one({'name': 'Foo', 'age': 1337}).inserted_id)
 
 # update document
 # doc = col.find_one_and_update(
@@ -18,4 +18,4 @@ col = client.test.test
 #     {'$unset': {'age': ''}}, upsert=True)
 
 # delete document
-col.delete_one({'_id': ObjectId('5e7eaae1e988123fd75b46ae')})
+# col.delete_one({'_id': ObjectId('5e7eaae1e988123fd75b46ae')})

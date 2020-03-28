@@ -28,16 +28,6 @@ for change in changes:
         history_collection.insert_one(hist)
 
     elif operation_type == 'update':
-    # update
-        # for k, v in change['updateDescription']['updatedFields'].items():
-        #     print(k, v)
-        #
-        # print(change['updateDescription']['updatedFields'])
-        # print(change['documentKey'])
-        # print(change['documentKey']['_id'])
-        # print(history_collection.find_one({'_id': change['documentKey']['_id']}))
-        # print(history_collection.find_one({'_id': change['documentKey']['_id']}).items())
-        # print(change['updateDescription']['updatedFields'].items())
 
         hist = history_collection.find_one({'_id': change['documentKey']['_id']})
         update = change['updateDescription']
