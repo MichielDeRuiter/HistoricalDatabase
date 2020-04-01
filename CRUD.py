@@ -2,20 +2,20 @@ from bson import ObjectId
 from pymongo import MongoClient
 
 client = MongoClient()
-col = client.test.test
+tracked_collection = client.example_db.tracked_collection
 
-# insert document
-print(col.insert_one({'name': 'Foo', 'age': 1337}).inserted_id)
+# create object
+# print(tracked_collection.insert_one({'name': 'Foo', 'age': 1337}).inserted_id)
 
-# update document
-# doc = col.find_one_and_update(
-#     {'_id': ObjectId('5e7bc3944edccf2c7ac9b846')},
-#     {'$set': {'name': 'Bar', 'age': 1340}}, upsert=True)
+# update object
+# doc = tracked_collection.find_one_and_update(
+#     {'_id': ObjectId('5e850e8ff77ffbe9b561c9c0')},
+#     {'$set': {'name': 'Bar'}}, upsert=True)
 
 # delete field
-# doc = col.find_one_and_update(
-#     {'_id': ObjectId('5e7bc3944edccf2c7ac9b846')},
+# doc = tracked_collection.find_one_and_update(
+#     {'_id': ObjectId('5e850177e826f5e496c80b96')},
 #     {'$unset': {'age': ''}}, upsert=True)
 
-# delete document
-# col.delete_one({'_id': ObjectId('5e7eaae1e988123fd75b46ae')})
+# delete object
+tracked_collection.delete_one({'_id': ObjectId('5e850e8ff77ffbe9b561c9c0')})
